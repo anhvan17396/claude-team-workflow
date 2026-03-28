@@ -11,25 +11,39 @@ $ARGUMENTS
 
 ## Rules you MUST follow
 
-1. You MUST call the Agent tool exactly 6 times (once per role)
-2. You MUST NOT read code files yourself
-3. You MUST NOT write or edit any files yourself
-4. You MUST NOT use Bash to run commands yourself
-5. You MUST print the role header BEFORE each Agent call
-6. You MUST use TodoWrite to track all 6 roles
-7. You MUST ALWAYS start with BA — NEVER skip BA, even for bug fixes or checks
-8. BA runs FIRST, then DEV. No exceptions.
+1. You MUST use the Agent tool to spawn separate agents — NEVER do the work yourself
+2. You MUST NOT read code files, write code, or run commands yourself
+3. You MUST print the role header BEFORE each Agent call
+4. You MUST use TodoWrite to track selected roles
+
+## Smart Role Selection
+
+Analyze the task and pick ONLY the roles that make sense:
+
+| Task Type | Roles to use |
+|-----------|-------------|
+| New feature (complex) | BA → DEV → TEST + DEVOPS → REVIEWER → PM |
+| New feature (simple) | DEV → TEST → REVIEWER |
+| Bug fix | DEV → TEST → REVIEWER |
+| Check/verify existing work | TEST + DEVOPS |
+| Code review only | REVIEWER |
+| Infra/build check | DEVOPS |
+| Requirements analysis | BA → PM |
+
+Print which roles you selected and why BEFORE starting the pipeline.
 
 ## Execute NOW
 
 ### 1. Setup
-Call TodoWrite:
-- "[BA] Analyze requirements" — pending ← ALWAYS FIRST, NEVER SKIP
-- "[DEV] Implement" — pending
-- "[TEST] Test changes" — pending
-- "[DEVOPS] Check infrastructure" — pending
-- "[REVIEWER] Review code" — pending
-- "[PM] Verify requirements" — pending
+Print:
+```
+━━ TEAM WORKFLOW ━━
+Task: {task}
+Selected roles: [list only chosen roles]
+Reason: [1 sentence why these roles]
+━━━━━━━━━━━━━━━━━━
+```
+Call TodoWrite with ONLY the selected roles (all pending).
 
 ### 2. BA Agent
 Print: `━━ [BA] Business Analyst — Analyzing... ━━`
