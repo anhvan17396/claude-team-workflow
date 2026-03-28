@@ -17,12 +17,14 @@ $ARGUMENTS
 4. You MUST NOT use Bash to run commands yourself
 5. You MUST print the role header BEFORE each Agent call
 6. You MUST use TodoWrite to track all 6 roles
+7. You MUST ALWAYS start with BA — NEVER skip BA, even for bug fixes or checks
+8. BA runs FIRST, then DEV. No exceptions.
 
 ## Execute NOW
 
 ### 1. Setup
 Call TodoWrite:
-- "[BA] Analyze requirements" — pending
+- "[BA] Analyze requirements" — pending ← ALWAYS FIRST, NEVER SKIP
 - "[DEV] Implement" — pending
 - "[TEST] Test changes" — pending
 - "[DEVOPS] Check infrastructure" — pending
