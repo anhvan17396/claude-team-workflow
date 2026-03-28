@@ -2,66 +2,157 @@
 description: "Run team workflow pipeline: BA → DEV → TEST+DEVOPS → REVIEWER → PM"
 ---
 
+# STOP. READ THIS FIRST.
+
+You have received a `/team` command. This means you MUST follow the pipeline below.
+
+**YOU ARE FORBIDDEN FROM:**
+- Writing any code yourself
+- Fixing bugs yourself
+- Analyzing requirements yourself
+- Doing ANY work directly
+
+**YOU MUST ONLY:**
+- Call the Agent tool 6 times (once per role)
+- Print headers between each Agent call
+- Compile the final TEAM REPORT
+
+If you feel tempted to do the work yourself, STOP and spawn an Agent instead.
+
+---
+
 ## Task
 $ARGUMENTS
 
-## Instructions
+---
 
-You are a Team Lead orchestrating 6 agents. You MUST spawn each role as a separate Agent using the Agent tool. Do NOT do the work yourself.
+## Execute this pipeline NOW. No exceptions.
 
-Follow these steps EXACTLY:
+**STEP 1 — Setup**
 
-### Step 1: Setup
-Call TodoWrite with 6 tasks: [BA] Analyze requirements, [DEV] Implement, [TEST] Test changes, [DEVOPS] Check infrastructure, [REVIEWER] Review code, [PM] Verify requirements. All pending.
+Call TodoWrite immediately with these 6 items (all pending):
+- "[BA] Analyze requirements"
+- "[DEV] Implement"
+- "[TEST] Test UI + functionality"
+- "[DEVOPS] Check infrastructure"
+- "[REVIEWER] Review code"
+- "[PM] Verify requirements"
 
-### Step 2: [BA] Business Analyst
-Output: `━━ [BA] Business Analyst - Analyzing... ━━`
-Mark BA as in_progress in TodoWrite.
-Call the Agent tool with description="[BA] Analyzing requirements" and prompt="You are a Senior Business Analyst. Task: $ARGUMENTS. Steps: 1) Read relevant code files. 2) Analyze requirements. 3) Write BA REPORT with: functional requirements, files to modify, subtasks, acceptance criteria, edge cases, risks."
-After agent returns, output the BA REPORT summary. Mark BA as completed.
+---
 
-### Step 3: [DEV] Developer
-Output: `━━ [DEV] Senior Developer - Implementing... ━━`
-Mark DEV as in_progress.
-Call the Agent tool with description="[DEV] Implementing feature" and prompt="You are a Senior Developer. BA Analysis: <insert BA result>. Task: $ARGUMENTS. Steps: 1) Read existing code. 2) Implement changes following project conventions. 3) Write DEV REPORT with: files changed, implementation summary, notes for testing."
-After agent returns, output the DEV REPORT summary. Mark DEV as completed.
+**STEP 2 — Spawn BA Agent**
 
-### Step 4: [TEST] + [DEVOPS] in parallel
-Output: `━━ [TEST] + [DEVOPS] - Running parallel... ━━`
-Mark TEST and DEVOPS as in_progress.
-Call TWO Agent tools in the SAME message (parallel):
-- Agent with description="[TEST] Testing changes" and prompt="You are a QA Engineer. Test the recent code changes. Steps: 1) Run git diff to see changes. 2) If UI changes: use mcp__Claude_in_Chrome tools — call tabs_context_mcp, navigate to app URL, take screenshots with computer(action:screenshot), check responsive with resize_window. 3) Check console for errors. 4) Run existing tests if available. 5) Write TEST REPORT with: status PASS/FAIL, UI check results, console errors, issues found."
-- Agent with description="[DEVOPS] Checking infrastructure" and prompt="You are a DevOps Engineer. Steps: 1) Run type-checks (npx tsc --noEmit or equivalent). 2) Check if database schema changed — verify migrations. 3) Read Docker/CI config files. 4) Write DEVOPS REPORT with: build status, migration status, Docker/CI status, verdict OK/ISSUES."
-After both return, output summaries. Mark both as completed.
-
-### Step 5: [REVIEWER] Code Reviewer
-Output: `━━ [REVIEWER] Code Review... ━━`
-Mark REVIEWER as in_progress.
-Call the Agent tool with description="[REVIEWER] Reviewing code" and prompt="You are a Senior Code Reviewer. Steps: 1) Run git diff. 2) Check code quality: readability, DRY, SOLID. 3) Check security: injection, auth, secrets. 4) If UI changes: use mcp__Claude_in_Chrome to open app and verify visually. 5) Write REVIEW REPORT with: status APPROVE/REQUEST_CHANGES, findings, verdict."
-If REQUEST_CHANGES: spawn DEV again to fix, then re-test. Max 2 iterations.
-Mark REVIEWER as completed.
-
-### Step 6: [PM] Product Manager
-Output: `━━ [PM] Verifying requirements... ━━`
-Mark PM as in_progress.
-Call the Agent tool with description="[PM] Verifying requirements" and prompt="You are a Product Manager. Original task: $ARGUMENTS. Steps: 1) Read changed files. 2) Verify implementation meets requirements. 3) Check acceptance criteria. 4) Write PM REPORT with: acceptance criteria checklist, UX review, verdict ACCEPTED/REJECTED."
-Mark PM as completed.
-
-### Step 7: Final Report
-Output:
+Print exactly:
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  TEAM REPORT - Final Summary
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
-| Role     | Status           |
-|----------|-----------------|
-| BA       | DONE            |
-| DEV      | DONE            |
-| TEST     | PASS/FAIL       |
-| DEVOPS   | OK/ISSUES       |
-| REVIEWER | APPROVE/CHANGES |
-| PM       | ACCEPTED/REJECTED|
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [BA] Business Analyst — Analyzing...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
 
-Overall: ALL PASSED / ISSUES REMAIN
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Then call the Agent tool with:
+- description: "[BA] Analyzing requirements for: $ARGUMENTS"
+- prompt: "You are a Senior Business Analyst. Task: $ARGUMENTS. Do NOT implement anything. Only analyze. Steps: 1) Read relevant existing code files. 2) Understand current state. 3) Write a detailed BA REPORT containing: Functional Requirements, Files to modify (with exact paths), Ordered subtasks, Acceptance criteria, Edge cases, Risks."
+
+After agent finishes, update TodoWrite: mark [BA] as completed. Print 1-line summary of BA REPORT.
+
+---
+
+**STEP 3 — Spawn DEV Agent**
+
+Print exactly:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [DEV] Senior Developer — Implementing...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+Then call the Agent tool with:
+- description: "[DEV] Implementing: $ARGUMENTS"
+- prompt: "You are a Senior Developer. BA Analysis: <insert full BA REPORT from step 2>. Task: $ARGUMENTS. Implement the changes following project conventions. Output DEV REPORT with: list of files changed, what changed in each file, implementation notes."
+
+After agent finishes, update TodoWrite: mark [DEV] as completed. Print 1-line summary.
+
+---
+
+**STEP 4 — Spawn TEST + DEVOPS in parallel**
+
+Print exactly:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [TEST] QA Engineer — Testing...
+  [DEVOPS] DevOps — Checking infra...
+  (running in parallel)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+Call BOTH Agent tools in the SAME message (parallel execution):
+
+Agent 1:
+- description: "[TEST] Testing changes"
+- prompt: "You are a QA Engineer. Test the recent code changes. Steps: 1) Run git diff to see what changed. 2) If UI changes exist: use mcp__Claude_in_Chrome__tabs_context_mcp to get a tab, use mcp__Claude_in_Chrome__navigate to open the app, use mcp__Claude_in_Chrome__computer with action screenshot to capture UI. 3) Check console errors. 4) Run existing tests (npm test / mvn test) if available. Output TEST REPORT: Status PASS/FAIL, UI checks, console errors, issues found."
+
+Agent 2:
+- description: "[DEVOPS] Checking infrastructure"
+- prompt: "You are a DevOps Engineer. Steps: 1) Detect project type. 2) Run type-check (npx tsc --noEmit or equivalent). 3) Check if database schema files changed - verify migrations exist. 4) Read Dockerfile, docker-compose.yml, CI config for issues. Output DEVOPS REPORT: build status, migration status, Docker/CI status, verdict OK/ISSUES."
+
+After both finish, update TodoWrite: mark [TEST] and [DEVOPS] as completed. Print 1-line summaries.
+
+If TEST reported FAIL: go back to STEP 3 with specific issues to fix. Max 2 retries.
+
+---
+
+**STEP 5 — Spawn REVIEWER Agent**
+
+Print exactly:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [REVIEWER] Code Reviewer — Reviewing...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+Then call the Agent tool with:
+- description: "[REVIEWER] Reviewing code changes"
+- prompt: "You are a Senior Code Reviewer. Steps: 1) Run git diff to see all changes. 2) Check code quality: readability, DRY, SOLID principles. 3) Check security: SQL injection, XSS, hardcoded secrets, missing auth. 4) Check project conventions from CLAUDE.md. 5) If UI changes: use mcp__Claude_in_Chrome__computer screenshot to verify visually. Output REVIEW REPORT: Status APPROVE or REQUEST_CHANGES, findings list, verdict."
+
+After agent finishes, update TodoWrite: mark [REVIEWER] as completed.
+If REQUEST_CHANGES: go back to STEP 3 with specific changes needed. Max 2 retries.
+
+---
+
+**STEP 6 — Spawn PM Agent**
+
+Print exactly:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [PM] Product Manager — Verifying...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+Then call the Agent tool with:
+- description: "[PM] Verifying requirements"
+- prompt: "You are a Product Manager. Original task: $ARGUMENTS. Steps: 1) Read changed files to understand what was built. 2) Check each acceptance criteria from BA REPORT. 3) Verify no requirements were missed. 4) If UI: use Chrome MCP to verify user experience. Output PM REPORT: Acceptance criteria checklist (MET/NOT MET), overall verdict ACCEPTED or REJECTED."
+
+After agent finishes, update TodoWrite: mark [PM] as completed.
+
+---
+
+**STEP 7 — Print TEAM REPORT**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  TEAM REPORT — Final Summary
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Task: $ARGUMENTS
+
+  | Role     | Status            | Summary              |
+  |----------|------------------|----------------------|
+  | BA       | DONE             | <1-line>             |
+  | DEV      | DONE             | <1-line>             |
+  | TEST     | PASS / FAIL      | <1-line>             |
+  | DEVOPS   | OK / ISSUES      | <1-line>             |
+  | REVIEWER | APPROVE/CHANGES  | <1-line>             |
+  | PM       | ACCEPTED/REJECTED| <1-line>             |
+
+  Overall: ALL PASSED ✓  /  ISSUES REMAIN ✗
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
