@@ -1,0 +1,9 @@
+{
+  "name": "team-workflow",
+  "version": "1.0.0",
+  "description": "Multi-agent team workflow pipeline with 6 roles: BA, DEV, TEST, DEVOPS, REVIEWER, PM",
+  "author": {
+    "name": "Nav",
+    "email": "nav@local"
+  }
+}
